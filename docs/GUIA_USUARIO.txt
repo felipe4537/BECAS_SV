@@ -1,0 +1,266 @@
+=========================================================
+  BECAS_SV — GUIA DE USO PARA EL EQUIPO
+  Sistema de Monitoreo de Becados
+=========================================================
+
+1. QUE ES BECAS_SV?
+--------------------
+Es una aplicacion web para gestionar los becados del programa.
+Permite registrar estudiantes becados, asignarles universidad,
+carrera y monitor, llevar un historico por ano de ingreso,
+agregar notas y observaciones, ver estadisticas de rendimiento
+academico y generar reportes. Todo desde el navegador.
+
+Esta publicada en PythonAnywhere (nube) y se accede desde
+cualquier computadora o celular con internet.
+
+
+2. COMO SE HIZO?
+----------------
+- Backend: Python con Flask (servidor web)
+- Base de datos: SQLite (un solo archivo, no necesita instalacion)
+- Frontend: HTML, CSS y JavaScript puro (sin frameworks)
+- Graficos: Chart.js (libreria JavaScript)
+- Reportes: pandas + openpyxl (genera archivos Excel)
+- Estadisticas: NumPy (rendimiento academico)
+- Iconos: SVG inline (dibujos vectoriales)
+
+Todo esta en un solo archivo (app.py) para facilitar la
+publicacion en PythonAnywhere.
+
+
+3. ACCESO AL SISTEMA
+--------------------
+
+3.1. INGRESAR (LOGIN)
+   1. Abri el navegador y anda a la URL del sistema.
+   2. Vas a ver una pantalla dividida:
+      - Lado izquierdo: logo y nombre del sistema
+      - Lado derecho: formulario de inicio de sesion
+   3. Ingresa tu correo electronico y tu telefono (contrasena).
+   4. Hace clic en "Ingresar".
+
+3.2. REGISTRARSE (primera vez)
+   1. En la pantalla de login, hace clic en "Registrate aqui".
+   2. Completa: Nombres, Apellidos, Correo, Telefono.
+   3. Hace clic en "Registrarse".
+   4. Ya podes iniciar sesion con tu correo y telefono.
+
+3.3. RECUPERAR CONTRASENA
+   - Si olvidaste tu telefono, hace clic en "Olvidaste tu
+     contrasena?" y segui las instrucciones.
+
+
+4. PAGINA PRINCIPAL
+-------------------
+Despues de iniciar sesion, ves la pagina principal con las
+siguientes opciones en el menu superior:
+
+   [Inicio]  [Dashboard]  [Ingreso]  [Reportes]
+
+- Inicio: vuelve a la pagina principal
+- Dashboard: graficos y estadisticas
+- Ingreso: submenu con Lista, Registrar, Carga Masiva
+- Reportes: descarga de Excel
+
+
+5. GESTION DE BECADOS (INGRESO)
+-------------------------------
+
+5.1. LISTA DE BECADOS
+   - Muestra una tabla con todos los becados registrados.
+   - Columnas: Nombres, Apellidos, DUI, Telefono, Email,
+     Departamento, Universidad, Carrera, Monitor, Periodo,
+     Promedio, Estado, Acciones.
+   - Para buscar: escribi en el campo de busqueda (filtra
+     automaticamente por nombre, apellido o DUI).
+   - Para editar: hace clic en el lapiz (Editar).
+   - Para eliminar: hace clic en la papelera (Eliminar).
+   - Para ver/agregar notas: hace clic en el icono de nota.
+
+5.2. REGISTRAR NUEVO BECADO
+   1. Hace clic en "+ Nuevo Becado".
+   2. Completa todos los campos del formulario. Esta
+      organizado en 3 secciones:
+
+      INFORMACION PERSONAL:
+      - Nombres y Apellidos (solo letras)
+      - DUI (9 digitos, sin guion)
+      - Fecha de Nacimiento
+      - Genero
+      - Telefono (8 digitos)
+      - Email
+      - Direccion
+      - Municipio
+      - Departamento (selecciona de la lista)
+      - Universidad (se carga segun el departamento)
+      - Carrera (se carga segun la universidad)
+      - Carnet
+      - Ano Ingreso (ano en que empezo la universidad)
+      - Ano Actual (ano de carrera que cursa actualmente)
+      - Ano Graduacion
+
+      CONTACTO DE EMERGENCIA:
+      - Nombre contacto emergencia
+      - Telefono emergencia
+
+      RENDIMIENTO ACADEMICO:
+      - Promedio (0.0 a 10.0)
+      - Ultimo Ano Cursado
+
+   3. Marca "Becado activo" si aplica.
+   4. Hace clic en "Guardar Becado".
+
+5.3. EDITAR BECADO
+   - Misma pantalla que registrar pero con datos precargados.
+   - Modifica lo que necesites y hace clic en "Actualizar Becado".
+
+5.4. ELIMINAR BECADO
+   - Te pide confirmacion antes de eliminar.
+   - Una vez eliminado, no se puede recuperar.
+
+5.5. NOTAS Y OBSERVACIONES
+   - Desde la lista de becados, hace clic en el icono de
+     nota (junto a los botones de editar/eliminar).
+   - Ves una tarjeta con los datos del becado y abajo el
+     historial de notas.
+   - Para agregar una nota:
+     1. Selecciona el tipo (General, Llamada, Visita, Academico)
+     2. Escribe el texto de la nota
+     3. Hace clic en "Agregar Nota"
+   - Las notas aparecen ordenadas de la mas reciente a la
+     mas antigua.
+   - Podes editar una nota haciendo clic en el lapiz.
+
+5.6. CARGA MASIVA POR EXCEL
+   - Hace clic en "Carga Masiva".
+   - Ves dos secciones apiladas:
+      A) "Formato del archivo" con las columnas requeridas.
+      B) "Subir archivo" para seleccionar el Excel.
+   - El archivo debe tener 22 columnas en este orden:
+      A) Nombres, B) Apellidos, C) DUI, D) Direccion,
+      E) Telefono, F) Email, G) Departamento, H) Universidad,
+      I) Carrera, J) Monitor, K) Ano Ingreso, L) Ano Actual,
+      M) Activo, N) FechaNacimiento, O) Genero, P) Municipio,
+      Q) ContactoEmergencia, R) TelefonoEmergencia, S) Carnet,
+      T) AnnoGraduacion, U) Promedio, V) UltimoAnioCursado
+   - Podes descargar una plantilla de ejemplo.
+   - El sistema valida cada fila y te muestra cuantos se
+     insertaron y cuantos errores hubo.
+
+
+6. DASHBOARD
+------------
+Muestra un resumen grafico del estado de los becados.
+
+6.1. INDICADORES (KPIs)
+   Arriba ves 4 tarjetas con numeros grandes:
+   - Total de Becados
+   - Activos
+   - Inactivos
+   - Total de Monitores
+   Si seleccionas un Ano Ingreso, muestra la variacion
+   contra el ano anterior con flechas verdes o rojas.
+
+   Ademas, hay una seccion "Rendimiento Academico" con:
+   - Promedio general (media)
+   - Mediana de promedios
+   - Promedio minimo
+   - Promedio maximo
+   - Cantidad de becados con promedio registrado
+
+6.2. FILTROS
+   Podes filtrar los datos del dashboard por:
+   - Ano Ingreso (acumulado: muestra <= al seleccionado)
+   - Departamento
+   - Universidad
+   - Carrera
+   Los filtros se actualizan solos al seleccionar.
+
+6.3. GRAFICOS
+   - Barras: Cantidad de becados por departamento
+   - Dona: Proporcion de activos vs inactivos
+   - Barras horizontales: Top 10 universidades con mas becados
+   - Lineas: Evolucion de becados por ano ingreso
+   - Barras horizontales: Top 10 monitores con mas becados
+
+
+7. REPORTES
+-----------
+Genera archivos Excel para descargar.
+
+7.1. TIPOS DE REPORTE
+   - Listado General: todos los becados con datos completos
+     (incluye Promedio y Ultimo Ano Cursado)
+   - Por Departamento: resumen por cada departamento
+   - Por Universidad: resumen por cada universidad
+   - Por Ano Ingreso: resumen por ano
+   - Por Monitor: resumen por monitor (incluye lista de becados)
+
+7.2. FILTROS OPCIONALES
+   - Departamento
+   - Universidad
+   - Ano Ingreso
+   - Estado (Activo/Inactivo/Todos)
+
+7.3. DESCARGAR
+   - Selecciona el tipo y los filtros.
+   - Hace clic en "Descargar Excel".
+   - Se descarga un archivo .xlsx con formato profesional
+     (headers morados, columnas con ancho automatico).
+
+
+8. CERRAR SESION
+----------------
+Hace clic en "Cerrar sesion" en la esquina superior derecha
+(o en el menu desplegable si estas en celular).
+
+
+9. USO EN CELULAR
+-----------------
+- El menu se convierte en un icono (tres lineas) en la
+  esquina superior derecha.
+- Toca el icono para abrir el menu.
+- Toca "Ingreso" para ver las opciones de becados.
+- Las tablas y formularios se adaptan al ancho de la
+  pantalla.
+- Los formularios pasan de 4 columnas a 1 columna en
+  pantallas chicas.
+
+
+10. FORMA DE LOS FORMULARIOS
+-----------------------------
+Los formularios de registrar y editar becados tienen un
+diseno horizontal de hasta 4 columnas. En pantallas
+medianas pasan a 3 columnas, en tablets a 2 y en celulares
+a 1 columna. Esto hace que llenar los datos sea mas rapido
+y visualmente ordenado.
+
+
+11. CURSOS DEL SISTEMA
+----------------------
+Al mover el mouse, vas a notar un pequeno circulo que
+sigue al cursor. Es un efecto visual para darle un toque
+moderno a la interfaz. No afecta el funcionamiento.
+
+
+12. DATOS BASICOS DEL SISTEMA
+-----------------------------
+- 14 departamentos de El Salvador cargados
+- 28 universidades cargadas
+- 60 carreras cargadas
+- Los catalogos no se pueden modificar desde la web
+  (se cargan directamente en la base de datos)
+
+
+13. SOLUCION DE PROBLEMAS COMUNES
+----------------------------------
+- "No se puede conectar": el servidor puede estar caido,
+  avisar al administrador.
+- "Error al registrarse": el correo o telefono ya estan en uso.
+- "DUI ya existe": ese estudiante ya fue registrado antes.
+- "Departamento no encontrado": revisa que el nombre del
+  departamento este escrito exactamente igual en el Excel.
+- "El reporte no se descarga": proba con otro navegador.
+- "No aparecen las estadisticas academicas": pandas y numpy
+  deben estar instalados en el servidor. Avisa al admin.

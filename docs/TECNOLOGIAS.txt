@@ -1,0 +1,174 @@
+=========================================================
+  BECAS_SV — TECNOLOGIAS UTILIZADAS
+=========================================================
+
+A continuacion se detallan las tecnologias, librerias y
+herramientas usadas en el desarrollo del sistema.
+
+
+1. LENGUAJE PRINCIPAL
+---------------------
+- Python 3.12+
+  Usado para todo el backend: logica del servidor, conexion
+  a base de datos, validaciones, generacion de reportes.
+
+
+2. FRAMEWORK WEB
+----------------
+- Flask 3.x
+  Framework web que maneja las rutas (URLs), las sesiones de
+  usuario, los formularios y la conexion entre el servidor
+  y las plantillas HTML.
+
+- Jinja2
+  Motor de plantillas que viene con Flask. Permite insertar
+  datos de Python dentro del HTML (ej: lista de becados,
+  opciones de selects).
+
+- Werkzeug
+  Biblioteca de utilidades HTTP de Flask. Se usa para hashear
+  contrasenas con password_hash y password_check.
+
+
+3. BASE DE DATOS
+----------------
+- SQLite 3
+  Base de datos embebida (no necesita servidor separado).
+  Todo se guarda en un solo archivo: BECAS_SV.db.
+  Contiene 7 tablas: Monitores, Departamentos, Universidades,
+  Carreras, UniversidadCarreras, Becados, NotasBecados.
+  La tabla Becados tiene 25 columnas, incluyendo datos
+  personales, contacto de emergencia, rendimiento academico.
+
+
+4. FRONTEND
+-----------
+- HTML5
+  Estructura de todas las paginas del sitio.
+
+- CSS3
+  Estilos visuales: colores, fuentes, layout con Flexbox y
+  Grid, animaciones, responsive design, cursor personalizado.
+
+- JavaScript (ES6 + vanilla)
+  Sin frameworks. Funcionalidades:
+  - Busqueda en tiempo real en la tabla de becados
+  - Menu hamburguesa para dispositivos moviles
+  - Cascading dropdowns (Departamento -> Universidad -> Carrera)
+  - Efecto de scroll en el header
+  - Cierre del menu al hacer clic fuera
+  - Cursor animado (dot + ring con efecto lerp)
+
+- Chart.js 4.x
+  Libreria JavaScript para graficos. Se usa en el Dashboard
+  para generar 5 tipos de graficos:
+  - Barras verticales (becados por departamento)
+  - Dona (activos vs inactivos)
+  - Barras horizontales (top universidades)
+  - Lineas (evolucion por ano)
+  - Barras horizontales (top monitores)
+
+- chartjs-plugin-datalabels 2.x
+  Plugin de Chart.js que muestra los valores numericos
+  directamente sobre las barras, donas y lineas.
+
+
+5. GENERACION DE REPORTES
+--------------------------
+- openpyxl 3.x
+  Libreria de Python para crear y leer archivos Excel (.xlsx).
+  Usos:
+  - Generar reportes con datos de becados (5 tipos)
+  - Aplicar formato profesional: headers morados, negritas,
+    color blanco, auto-ancho de columnas
+  - Leer archivos subidos en Carga Masiva
+  - Descargar plantilla de ejemplo para carga masiva
+
+- pandas 2.x
+  Libreria de Python para manipulacion y analisis de datos.
+  Usos en BECAS_SV:
+  - Consultas a BD con pd.read_sql_query
+  - Generacion de Excel con pd.ExcelWriter (mas eficiente)
+  - Opcional: si no esta instalado, fallback a openpyxl puro
+
+- NumPy 1.x
+  Libreria de Python para computacion numerica.
+  Usos en BECAS_SV:
+  - Estadisticas de rendimiento academico en dashboard:
+    media (np.mean), mediana (np.median), desviacion (np.std),
+    percentiles, distribucion de frecuencias (np.histogram)
+
+
+6. ICONOS
+---------
+- SVG inline
+  Todos los iconos del sistema (Inicio, Dashboard, Ingreso,
+  Lista, Registrar, Carga Masiva, Reportes, Usuario, Cerrar
+  Sesion) fueron creados manualmente como codigo SVG con
+  estilo lucide (stroke-width 2.5, tamano 16x16).
+  Ventaja: no pesan, no necesitan descarga, escalan a
+  cualquier tamano.
+
+
+7. INFRAESTRUCTURA Y DESPLIEGUE
+-------------------------------
+- PythonAnywhere (free tier)
+  Plataforma en la nube donde esta publicada la aplicacion.
+  Caracteristicas:
+  - 500 MB de almacenamiento
+  - Soporte para Flask con mod_wsgi
+  - Consola Bash para mantenimiento
+
+- Git / GitHub
+  Control de versiones del codigo fuente.
+
+
+8. ENTORNO DE DESARROLLO
+-------------------------
+- Windows (local)
+  Sistema operativo usado para desarrollar y probar la app.
+
+- WSL (Windows Subsystem for Linux)
+  Terminal de Linux dentro de Windows para ejecutar
+  comandos de Python y Git.
+
+- PythonAnywhere Bash
+  Consola en la nube para desplegar y mantener la app.
+
+
+9. SCRIPT DE MIGRACION
+-----------------------
+- migrar.py: Crea columnas nuevas (promedio, ultimo_anio_cursado,
+  fecha_nacimiento, genero, municipio, contacto_emergencia,
+  telefono_emergencia, carnet, anno_graduacion) y la tabla
+  NotasBecados. Es idempotente (se puede ejecutar varias veces
+  sin romper nada).
+
+- poblar.py: Asigna promedios y ultimo_anio_cursado a
+  registros que tengan esos campos en NULL.
+
+- poblar_personal.py: Genera fecha_nacimiento, genero,
+  municipio, contacto_emergencia y telefono_emergencia para
+  registros que carezcan de esos datos.
+
+
+10. DEPENDENCIAS (requirements.txt)
+------------------------------------
+Las librerias necesarias para ejecutar la app:
+
+   flask
+   openpyxl
+   pandas
+   numpy
+
+Para instalar:
+   pip install flask openpyxl pandas numpy
+
+En PythonAnywhere:
+   pip3 install pandas numpy --user
+
+
+11. CDN (cargadas desde internet en el navegador)
+--------------------------------------------------
+   https://cdn.jsdelivr.net/npm/chart.js@4
+   https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2
