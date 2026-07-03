@@ -1411,7 +1411,7 @@ def notas(becado_id):
         FROM NotasBecados n JOIN Monitores m ON n.monitor_id=m.id
         WHERE n.becado_id=? ORDER BY n.fecha DESC""", (becado_id,))
     notas_list = cur.fetchall(); conn.close()
-    notas_html = '<div class="tabla-scroll" style="max-height:480px;margin-top:16px"><table><thead><tr><th style="width:80px">Tipo</th><th style="width:150px">Fecha</th><th style="width:130px">Autor</th><th>Mensaje</th></tr></thead><tbody>'+("".join(f"""<tr><td><span class="nota-tipo {n[4]}">{n[4]}</span></td><td style="white-space:nowrap;color:#80868b;font-size:12px">{n[5][:16]}</td><td style="font-size:12px;color:#80868b">{n[6]}</td><td style="white-space:pre-wrap;max-width:400px">{n[3]}</td></tr>""" for n in notas_list))+'</tbody></table></div>' if notas_list else '<p class="vacio">No hay notas registradas</p>'
+    notas_html = '<div class="tabla-scroll" style="max-height:480px;margin-top:16px"><table><thead><tr><th style="width:1%;white-space:nowrap">Tipo</th><th style="width:1%;white-space:nowrap">Fecha</th><th style="width:1%;white-space:nowrap">Autor</th><th style="width:99%">Mensaje</th></tr></thead><tbody>'+("".join(f"""<tr><td><span class="nota-tipo {n[4]}">{n[4]}</span></td><td style="white-space:nowrap;color:#80868b;font-size:12px">{n[5][:16]}</td><td style="font-size:12px;color:#80868b">{n[6]}</td><td style="white-space:pre-wrap">{n[3]}</td></tr>""" for n in notas_list))+'</tbody></table></div>' if notas_list else '<p class="vacio">No hay notas registradas</p>'
     c = f"""<style>
 .notas-wrap{{max-width:800px;margin:0 auto}}
 .notas-header{{margin-bottom:24px}}
@@ -1421,7 +1421,7 @@ def notas(becado_id):
 .notas-info td{{padding:4px 12px;border:none}}
 .notas-info td:first-child{{font-weight:600;color:#302b63;white-space:nowrap}}
 .nota-form{{background:#fff;border-radius:12px;border:1px solid #dadce0;padding:20px;margin-bottom:24px}}
-.nota-form h4{{font-size:15px;color:#302b63;margin:0 0 12px}}
+.nota-form h4{{font-size:15px;color:#fff;margin:-20px -20px 16px;padding:16px 20px;background:linear-gradient(135deg,#302b63,#5e4fa2);border-radius:12px 12px 0 0}}
 .nota-form select,.nota-form textarea{{width:100%;padding:10px 12px;border:1.5px solid #dadce0;border-radius:8px;font-size:14px;outline:none;margin-bottom:12px;background:#f8f9fa}}
 .nota-form select:focus,.nota-form textarea:focus{{border-color:#e67e22;box-shadow:0 0 0 3px rgba(230,126,34,.1);background:#fff}}
 .nota-form textarea{{resize:vertical;min-height:80px}}
