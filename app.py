@@ -1411,7 +1411,7 @@ def notas(becado_id):
         FROM NotasBecados n JOIN Monitores m ON n.monitor_id=m.id
         WHERE n.becado_id=? ORDER BY n.fecha DESC""", (becado_id,))
     notas_list = cur.fetchall(); conn.close()
-    notas_html = '<div class="tabla-scroll" style="max-height:480px;margin-top:16px"><table><thead><tr><th style="width:80px">Tipo</th><th style="width:150px">Fecha</th><th style="width:130px">Autor</th><th>Mensaje</th></tr></thead><tbody>'+("".join(f"""<tr><td><span class="nota-tipo {n[3]}">{n[3]}</span></td><td style="white-space:nowrap;color:#80868b;font-size:12px">{n[4][:16]}</td><td style="font-size:12px;color:#80868b">{n[5]}</td><td style="white-space:pre-wrap;max-width:400px">{n[2]}</td></tr>""" for n in notas_list))+'</tbody></table></div>' if notas_list else '<p class="vacio">No hay notas registradas</p>'
+    notas_html = '<div class="tabla-scroll" style="max-height:480px;margin-top:16px"><table><thead><tr><th style="width:80px">Tipo</th><th style="width:150px">Fecha</th><th style="width:130px">Autor</th><th>Mensaje</th></tr></thead><tbody>'+("".join(f"""<tr><td><span class="nota-tipo {n[4]}">{n[4]}</span></td><td style="white-space:nowrap;color:#80868b;font-size:12px">{n[5][:16]}</td><td style="font-size:12px;color:#80868b">{n[6]}</td><td style="white-space:pre-wrap;max-width:400px">{n[3]}</td></tr>""" for n in notas_list))+'</tbody></table></div>' if notas_list else '<p class="vacio">No hay notas registradas</p>'
     c = f"""<style>
 .notas-wrap{{max-width:800px;margin:0 auto}}
 .notas-header{{margin-bottom:24px}}
@@ -1430,7 +1430,8 @@ def notas(becado_id):
 .nota-tipo.llamada{{background:#e3f2fd;color:#1565c0}}
 .nota-tipo.visita{{background:#fef3e0;color:#e67e22}}
 .nota-tipo.academico{{background:#e6f4ea;color:#1e7e34}}
-.notas-wrap .tabla-scroll{{border:1px solid #dadce0;border-radius:12px}}
+.notas-wrap .tabla-scroll{{border:1px solid #dadce0;border-radius:12px;overflow:hidden}}
+.notas-wrap .tabla-scroll table{{border-collapse:separate;border-spacing:0}}
 @media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}.notas-wrap .tabla-scroll{{border-radius:0}}}}
 </style>
 <div class="notas-wrap">
