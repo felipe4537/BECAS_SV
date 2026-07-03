@@ -1411,7 +1411,7 @@ def notas(becado_id):
         FROM NotasBecados n JOIN Monitores m ON n.monitor_id=m.id
         WHERE n.becado_id=? ORDER BY n.fecha DESC""", (becado_id,))
     notas_list = cur.fetchall(); conn.close()
-    notas_html = "".join(f"""<div class="nota-card"><div class="nota-hdr"><span class="nota-tipo {n[3]}">{n[3]}</span><span class="nota-fecha">{n[4][:16]}</span><span class="nota-autor">{n[5]}</span></div><div class="nota-body">{n[2]}</div></div>""" for n in notas_list) if notas_list else '<p class="vacio">No hay notas registradas</p>'
+    notas_html = '<div class="tabla-scroll" style="max-height:480px;margin-top:16px"><table><thead><tr><th style="width:80px">Tipo</th><th style="width:150px">Fecha</th><th style="width:130px">Autor</th><th>Nota</th></tr></thead><tbody>'+("".join(f"""<tr><td><span class="nota-tipo {n[3]}">{n[3]}</span></td><td style="white-space:nowrap;color:#80868b;font-size:12px">{n[4][:16]}</td><td style="font-size:12px;color:#80868b">{n[5]}</td><td style="white-space:pre-wrap;max-width:400px">{n[2]}</td></tr>""" for n in notas_list))+'</tbody></table></div>' if notas_list else '<p class="vacio">No hay notas registradas</p>'
     c = f"""<style>
 .notas-wrap{{max-width:800px;margin:0 auto}}
 .notas-header{{margin-bottom:24px}}
@@ -1425,17 +1425,12 @@ def notas(becado_id):
 .nota-form select,.nota-form textarea{{width:100%;padding:10px 12px;border:1.5px solid #dadce0;border-radius:8px;font-size:14px;outline:none;margin-bottom:12px;background:#f8f9fa}}
 .nota-form select:focus,.nota-form textarea:focus{{border-color:#e67e22;box-shadow:0 0 0 3px rgba(230,126,34,.1);background:#fff}}
 .nota-form textarea{{resize:vertical;min-height:80px}}
-.nota-card{{background:#fff;border-radius:8px;border:1px solid #e8eaed;padding:14px 16px;margin-bottom:10px}}
-.nota-hdr{{display:flex;gap:8px;align-items:center;margin-bottom:6px;font-size:12px;flex-wrap:wrap}}
 .nota-tipo{{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase}}
 .nota-tipo.general{{background:#f1f3f4;color:#5f6368}}
 .nota-tipo.llamada{{background:#e3f2fd;color:#1565c0}}
 .nota-tipo.visita{{background:#fef3e0;color:#e67e22}}
 .nota-tipo.academico{{background:#e6f4ea;color:#1e7e34}}
-.nota-fecha{{color:#80868b}}
-.nota-autor{{color:#80868b;margin-left:auto}}
-.nota-body{{font-size:14px;line-height:1.6;white-space:pre-wrap}}
-@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}}}
+@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}}}
 </style>
 <div class="notas-wrap">
 <div class="notas-header">
