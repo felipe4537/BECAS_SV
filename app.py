@@ -1,4 +1,4 @@
-import os, json, re, sqlite3, io, openpyxl
+import os, json, re, sqlite3, io, openpyxl, datetime
 from flask import Flask, render_template_string, request, redirect, url_for, session, flash, jsonify, send_file
 from functools import wraps
 try:
@@ -1402,15 +1402,16 @@ def notas(becado_id):
     if not b:
         conn.close(); flash("Becado no encontrado", "error"); return redirect(url_for("ingreso"))
     if request.method == "POST":
-        cur.execute("INSERT INTO NotasBecados (becado_id, monitor_id, nota, tipo) VALUES (?,?,?,?)",
-                    (becado_id, session["monitor_id"], request.form["nota"], request.form.get("tipo","general")))
+        ahora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cur.execute("INSERT INTO NotasBecados (becado_id, monitor_id, nota, tipo, fecha) VALUES (?,?,?,?,?)",
+                    (becado_id, session["monitor_id"], request.form["nota"], request.form.get("tipo","general"), ahora))
         conn.commit(); flash("Nota agregada", "ok"); conn.close()
         return redirect(url_for("notas", becado_id=becado_id))
     cur.execute("""SELECT n.*, m.nombres||' '||m.apellidos as autor
         FROM NotasBecados n JOIN Monitores m ON n.monitor_id=m.id
         WHERE n.becado_id=? ORDER BY n.fecha DESC""", (becado_id,))
     notas_list = cur.fetchall(); conn.close()
-    notas_html = "".join(f"""<div class="nota-card"><div class="nota-hdr"><span class="nota-tipo {n[3]}">{n[3]}</span><span class="nota-fecha">{n[4][:10]}</span><span class="nota-autor">{n[5]}</span></div><div class="nota-body">{n[2]}</div></div>""" for n in notas_list) if notas_list else '<p class="vacio">No hay notas registradas</p>'
+    notas_html = "".join(f"""<div class="nota-card"><div class="nota-hdr"><span class="nota-tipo {n[3]}">{n[3]}</span><span class="nota-fecha">{n[4][:16]}</span><span class="nota-autor">{n[5]}</span></div><div class="nota-body">{n[2]}</div></div>""" for n in notas_list) if notas_list else '<p class="vacio">No hay notas registradas</p>'
     c = f"""<style>
 .notas-wrap{{max-width:800px;margin:0 auto}}
 .notas-header{{margin-bottom:24px}}
@@ -1434,7 +1435,7 @@ def notas(becado_id):
 .nota-fecha{{color:#80868b}}
 .nota-autor{{color:#80868b;margin-left:auto}}
 .nota-body{{font-size:14px;line-height:1.6;white-space:pre-wrap}}
-@media(max-width:640px){{.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}}}
+@media(max-width:640px){{.notas-wrap{{padding:0 12px}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info td{{display:block;padding:2px 0}}.notas-info td:first-child{{width:auto}}}}
 </style>
 <div class="notas-wrap">
 <div class="notas-header">
@@ -1492,6 +1493,10 @@ def reportes():
 
         if HAS_PD:
             import pandas as pd
+            # KPI data
+            cur.execute("SELECT COUNT(*), SUM(b.activo), SUM(1-b.activo) FROM Becados b"+wh, p)
+            kr = cur.fetchone()
+            tk = kr[0] or 0; ak = kr[1] or 0; ik = kr[2] or 0
             queries = {
                 "listado": {
                     "sql": """SELECT b.nombres,b.apellidos,b.dui,b.telefono,b.email,
@@ -1539,13 +1544,38 @@ def reportes():
                 df = df.loc[:, ~df.columns.duplicated()]
                 buf = io.BytesIO()
                 with pd.ExcelWriter(buf, engine="openpyxl") as writer:
-                    df.to_excel(writer, index=False, sheet_name="Reporte")
-                    ws = writer.sheets["Reporte"]
-                    for col_idx in range(1, len(df.columns)+1):
-                        cell = ws.cell(row=1, column=col_idx)
-                        cell.font = openpyxl.styles.Font(bold=True, color="FFFFFF", size=11)
-                        cell.fill = openpyxl.styles.PatternFill(start_color="302b63", fill_type="solid")
-                        cell.alignment = openpyxl.styles.Alignment(horizontal="center")
+                    # Sheet 1: Resumen con KPIs + grafico
+                    pd.DataFrame({"Indicador":["Total Becados","Activos","Inactivos"],"Valor":[tk,ak,ik]}).to_excel(writer, index=False, sheet_name="Resumen", startrow=0)
+                    ws_r = writer.sheets["Resumen"]
+                    for ci in range(1,3):
+                        c = ws_r.cell(row=1, column=ci)
+                        c.font = openpyxl.styles.Font(bold=True, color="FFFFFF", size=12)
+                        c.fill = openpyxl.styles.PatternFill(start_color="302b63", fill_type="solid")
+                        c.alignment = openpyxl.styles.Alignment(horizontal="center")
+                    ws_r.column_dimensions["A"].width = 20; ws_r.column_dimensions["B"].width = 15
+                    for ri in range(2,5):
+                        ws_r.cell(row=ri, column=1).font = openpyxl.styles.Font(size=11)
+                        cv = ws_r.cell(row=ri, column=2)
+                        cv.font = openpyxl.styles.Font(bold=True, size=14, color="302b63")
+                        cv.alignment = openpyxl.styles.Alignment(horizontal="center")
+                    if ak+ik > 0:
+                        from openpyxl.chart import PieChart, Reference
+                        pie = PieChart()
+                        pie.title = "Estado de Becados"; pie.style = 10
+                        pie.add_data(Reference(ws_r, min_col=2, min_row=2, max_row=4))
+                        pie.set_categories(Reference(ws_r, min_col=1, min_row=2, max_row=4))
+                        pie.dataLabels = openpyxl.chart.label.DataLabelList()
+                        pie.dataLabels.showPercent = True; pie.dataLabels.showCatName = True
+                        pie.width = 18; pie.height = 12
+                        ws_r.add_chart(pie, "D1")
+                    # Sheet 2: Detalle
+                    df.to_excel(writer, index=False, sheet_name="Detalle")
+                    ws = writer.sheets["Detalle"]
+                    for ci in range(1, len(df.columns)+1):
+                        c = ws.cell(row=1, column=ci)
+                        c.font = openpyxl.styles.Font(bold=True, color="FFFFFF", size=11)
+                        c.fill = openpyxl.styles.PatternFill(start_color="302b63", fill_type="solid")
+                        c.alignment = openpyxl.styles.Alignment(horizontal="center")
                     ws.row_dimensions[1].height = 28
                     for col in ws.columns:
                         mx = 0
@@ -1558,9 +1588,38 @@ def reportes():
                 return send_file(buf, as_attachment=True, download_name="reporte_becados.xlsx",
                                 mimetype="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         else:
+            # KPI data
+            cur.execute("SELECT COUNT(*), SUM(b.activo), SUM(1-b.activo) FROM Becados b"+wh, p)
+            kr = cur.fetchone()
+            tk = kr[0] or 0; ak = kr[1] or 0; ik = kr[2] or 0
             wb = openpyxl.Workbook()
-            ws = wb.active
-            ws.title = "Reporte"
+            # Sheet 1: Resumen
+            ws_r = wb.active
+            ws_r.title = "Resumen"
+            rsv = [["Indicador","Valor"],["Total Becados",tk],["Activos",ak],["Inactivos",ik]]
+            for ri, row in enumerate(rsv, 1):
+                for ci, v in enumerate(row, 1):
+                    c = ws_r.cell(row=ri, column=ci, value=v)
+                    if ri == 1:
+                        c.font = openpyxl.styles.Font(bold=True, color="FFFFFF", size=12)
+                        c.fill = openpyxl.styles.PatternFill(start_color="302b63", fill_type="solid")
+                        c.alignment = openpyxl.styles.Alignment(horizontal="center")
+                    else:
+                        c.font = openpyxl.styles.Font(bold=True, size=14, color="302b63" if ci==2 else "000000")
+                        if ci == 2: c.alignment = openpyxl.styles.Alignment(horizontal="center")
+            ws_r.column_dimensions["A"].width = 20; ws_r.column_dimensions["B"].width = 15
+            if ak+ik > 0:
+                from openpyxl.chart import PieChart, Reference
+                pie = PieChart()
+                pie.title = "Estado de Becados"; pie.style = 10
+                pie.add_data(Reference(ws_r, min_col=2, min_row=2, max_row=4))
+                pie.set_categories(Reference(ws_r, min_col=1, min_row=2, max_row=4))
+                pie.dataLabels = openpyxl.chart.label.DataLabelList()
+                pie.dataLabels.showPercent = True; pie.dataLabels.showCatName = True
+                pie.width = 18; pie.height = 12
+                ws_r.add_chart(pie, "D1")
+            # Sheet 2: Detalle
+            ws = wb.create_sheet("Detalle")
             def hdr(cols):
                 for i, c in enumerate(cols, 1):
                     cell = ws.cell(row=1, column=i, value=c)
