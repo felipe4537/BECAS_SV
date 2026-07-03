@@ -1075,7 +1075,13 @@ def ingreso_editar(id):
     conn.close()
     def sel(v,val): return "selected" if v == val else ""
     opts_depto = "<option value=''>Seleccione un departamento</option>" + "".join(f"<option value='{r[0]}' {sel(r[0],b[7])}>{r[1]}</option>" for r in deptos)
-    opts_mon = "".join(f"<option value='{r[0]}' {sel(r[0],b[12])}>{r[1]} {r[2]}</option>" for r in mons)
+    es_mi_becado = b[12] == session["monitor_id"]
+    if es_mi_becado:
+        opts_mon = "".join(f"<option value='{r[0]}' {sel(r[0],b[12])}>{r[1]} {r[2]}</option>" for r in mons)
+        mon_html = '<label>Monitor</label><select name="monitor_id" required>'+opts_mon+'</select>'
+    else:
+        nom_mon = next((f"{r[1]} {r[2]}" for r in mons if r[0]==b[12]), "Desconocido")
+        mon_html = '<label>Monitor</label><input type="text" value="'+nom_mon+'" disabled style="background:#f1f3f4;color:#5f6368;cursor:not-allowed"><input type="hidden" name="monitor_id" value="'+str(b[12])+'">'
     chk = "checked" if b[13] else ""
     uni_data = {}
     for r in unis:
@@ -1129,7 +1135,7 @@ def ingreso_editar(id):
 <div><label>Departamento</label><select name="departamento_id" id="d_sel" required onchange="cargarUniversidades(this.value)">{opts_depto}</select></div>
 <div><label>Universidad</label><select name="universidad_id" id="u_sel" required onchange="cargarCarreras(this.value,0)"><option value=''>Cargando...</option></select></div>
 <div><label>Carrera</label><select name="carrera_id" id="c_sel" required><option value=''>Cargando...</option></select></div>
-<div><label>Monitor</label><select name="monitor_id" required>{opts_mon}</select></div>
+<div>{mon_html}</div>
 <div><label>Año Ingreso</label><input type="number" name="anio_ingreso" value="{b[10]}" min="2000" max="2030" required><span class="field-note">Año en que inició la universidad</span></div>
 <div><label>Año Actual</label><input type="number" name="anio_actual" value="{b[11]}" min="1" max="10" required><span class="field-note">Año de carrera que cursa actualmente</span></div>
             <div class="full" style="margin-top:16px;padding-top:16px;border-top:2px solid #e8eaed"><h4 style="color:#302b63;font-size:15px;margin:0 0 4px">Informacion Personal</h4><p class="subt" style="font-size:12px;color:#80868b;margin:0 0 12px">Datos adicionales del becado</p></div>
