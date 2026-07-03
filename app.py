@@ -1435,7 +1435,7 @@ def notas(becado_id):
 .nota-fecha{{color:#80868b}}
 .nota-autor{{color:#80868b;margin-left:auto}}
 .nota-body{{font-size:14px;line-height:1.6;white-space:pre-wrap}}
-@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0 12px}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info td{{display:block;padding:2px 0}}.notas-info td:first-child{{width:auto}}}}
+@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}}}
 </style>
 <div class="notas-wrap">
 <div class="notas-header">
