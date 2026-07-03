@@ -1430,7 +1430,8 @@ def notas(becado_id):
 .nota-tipo.llamada{{background:#e3f2fd;color:#1565c0}}
 .nota-tipo.visita{{background:#fef3e0;color:#e67e22}}
 .nota-tipo.academico{{background:#e6f4ea;color:#1e7e34}}
-@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}}}
+.notas-wrap .tabla-scroll{{border:1px solid #dadce0;border-radius:12px}}
+@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0}}.notas-header h2{{font-size:20px}}.notas-info{{width:100%;border-radius:0}}.notas-info td{{display:block;padding:2px 12px}}.notas-info td:first-child{{width:auto}}.notas-wrap .tabla-scroll{{border-radius:0}}}}
 </style>
 <div class="notas-wrap">
 <div class="notas-header">
