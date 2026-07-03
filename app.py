@@ -1402,7 +1402,7 @@ def notas(becado_id):
     if not b:
         conn.close(); flash("Becado no encontrado", "error"); return redirect(url_for("ingreso"))
     if request.method == "POST":
-        ahora = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ahora = (datetime.datetime.utcnow() - datetime.timedelta(hours=6)).strftime("%Y-%m-%d %H:%M:%S")
         cur.execute("INSERT INTO NotasBecados (becado_id, monitor_id, nota, tipo, fecha) VALUES (?,?,?,?,?)",
                     (becado_id, session["monitor_id"], request.form["nota"], request.form.get("tipo","general"), ahora))
         conn.commit(); flash("Nota agregada", "ok"); conn.close()
@@ -1435,7 +1435,7 @@ def notas(becado_id):
 .nota-fecha{{color:#80868b}}
 .nota-autor{{color:#80868b;margin-left:auto}}
 .nota-body{{font-size:14px;line-height:1.6;white-space:pre-wrap}}
-@media(max-width:640px){{.notas-wrap{{padding:0 12px}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info td{{display:block;padding:2px 0}}.notas-info td:first-child{{width:auto}}}}
+@media(max-width:640px){{.notas-wrap{{max-width:none;padding:0 12px}}.notas-header h2{{font-size:20px}}.nota-card{{padding:12px}}.notas-info td{{display:block;padding:2px 0}}.notas-info td:first-child{{width:auto}}}}
 </style>
 <div class="notas-wrap">
 <div class="notas-header">
